@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color> <!-- Ana renk -->
+    <color name="colorPrimaryDark">#3700B3</color> <!-- Koyu ana renk -->
+    <color name="colorAccent">#03DAC5</color> <!-- Vurgu rengi -->
+    <color name="colorBackground">#FFFFFF</color> <!-- Arka plan rengi -->
+    <color name="colorText">#000000</color> <!-- Metin rengi -->
+    <color name="colorPrimary1">#FF5722</color> <!-- Geri dön butonu rengi -->
+    <color name="colorAccent1">#4CAF50</color>
+</resources>

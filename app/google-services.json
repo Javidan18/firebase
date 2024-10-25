@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "108015522709",
+    "firebase_url": "https://sagliktakipandroid-567c9-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "sagliktakipandroid-567c9",
+    "storage_bucket": "sagliktakipandroid-567c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108015522709:android:22a865f54e2ccbbe159c9c",
+        "android_client_info": {
+          "package_name": "com.example.sagliktakipandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "108015522709-hcv57n0necs48ledg9sptk3ggjtkcq74.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9N1PT-wUgY0I8tH_r9xnfIzq2T6s2hkI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "108015522709-hcv57n0necs48ledg9sptk3ggjtkcq74.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

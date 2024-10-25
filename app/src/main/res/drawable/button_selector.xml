@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Tıklanmış durumda -->
+    <item android:state_pressed="true"
+        android:drawable="@color/colorAccent" /> <!-- Tıklama rengi -->
+
+    <!-- Seçili durumda -->
+    <item android:state_selected="true"
+        android:drawable="@color/colorPrimaryDark" /> <!-- Seçim rengi -->
+
+    <!-- Normal durumda -->
+    <item android:drawable="@color/colorPrimary" /> <!-- Varsayılan renk -->
+</selector>
