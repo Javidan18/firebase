@@ -1,9 +1,9 @@
 plugins {
-
     alias(libs.plugins.android.application)
     // Google Hizmetleri eklentisi
     id("com.google.gms.google-services") version "4.4.2" apply false
 }
+
 apply plugin: 'com.google.gms.google-services'
 
 android {
@@ -42,18 +42,12 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.4.0')
 
     // Firebase ürünleri (sürüm belirtmeden eklenir)
-    implementation 'com.google.firebase:firebase-auth'
-
-
-    // Google Play Services Auth
-    implementation 'com.google.android.gms:play-services-auth:20.6.0'
-
-    implementation("com.google.firebase:firebase-database")
+    implementation 'com.google.firebase:firebase-auth' // Firebase Authentication'ı ekleyin
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.android.gms:play-services-auth:20.0.1'
 
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
 }
-
-

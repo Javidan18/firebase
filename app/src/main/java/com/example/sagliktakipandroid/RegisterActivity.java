@@ -1,5 +1,6 @@
 package com.example.sagliktakipandroid;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,27 +10,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText usernameEditText, emailEditText, passwordEditText, repeatPasswordEditText;
-    private FirebaseAuth mAuth;
     private DatabaseReference databaseReference; // Realtime Database referansı
+    private ProgressDialog progressDialog; // Yüklenme göstergesi
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // Firebase Authentication ve Database referanslarını al
-        mAuth = FirebaseAuth.getInstance();
+        // Database referansını al
         databaseReference = FirebaseDatabase.getInstance().getReference("Users"); // "Users" adında bir referans oluştur
 
         // UI elemanlarını tanımla
@@ -37,6 +38,11 @@ public class RegisterActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         repeatPasswordEditText = findViewById(R.id.repeatPasswordEditText);
+
+        // Yüklenme göstergesi ayarları
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Kayıt işlemi devam ediyor...");
+        progressDialog.setCancelable(false);
 
         // Kayıt olma butonu tıklama olayı
         Button registerButton = findViewById(R.id.registerButton);
@@ -49,7 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     // Kayıt olma butonuna tıklanıldığında çağrılacak fonksiyon
     public void onRegisterButtonClick(View view) {
-        createUser();
+        createUser(view);
     }
 
     // Geri LoginActivity'ye dönme butonu tıklanıldığında çağrılacak fonksiyon
@@ -59,8 +65,8 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     }
 
-    // Firebase üzerinden kullanıcı kaydı oluşturma ve veritabanına kaydetme fonksiyonu
-    private void createUser() {
+    // Kullanıcı kaydetme fonksiyonu
+    private void createUser(View view) {
         String username = usernameEditText.getText().toString().trim();
         String email = emailEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
@@ -69,84 +75,98 @@ public class RegisterActivity extends AppCompatActivity {
         // Kullanıcı adı, email ve şifre kontrolleri
         if (TextUtils.isEmpty(username)) {
             usernameEditText.setError("Kullanıcı adı gerekli");
+            Log.e("RegisterActivity", "Kullanıcı adı boş.");
             return;
         }
 
-        if (TextUtils.isEmpty(email)) {
-            emailEditText.setError("Email gerekli");
+        if (TextUtils.isEmpty(email) || !email.endsWith("@gmail.com")) {
+            emailEditText.setError("Geçerli bir Gmail adresi girin");
+            Log.e("RegisterActivity", "Geçersiz email: " + email);
             return;
         }
 
-        if (!email.endsWith("@gmail.com")) {
-            emailEditText.setError("Email '@gmail.com' ile bitmelidir");
-            return;
-        }
-
+        // Şifre ve tekrar şifre kontrolleri
         if (TextUtils.isEmpty(password)) {
             passwordEditText.setError("Şifre gerekli");
+            Log.e("RegisterActivity", "Şifre boş.");
             return;
         }
 
         if (TextUtils.isEmpty(repeatPassword)) {
             repeatPasswordEditText.setError("Şifreyi tekrar girin");
+            Log.e("RegisterActivity", "Şifre tekrar boş.");
             return;
         }
 
         if (!password.equals(repeatPassword)) {
             repeatPasswordEditText.setError("Şifreler eşleşmiyor");
+            Log.e("RegisterActivity", "Şifreler eşleşmiyor: " + password + " != " + repeatPassword);
             return;
         }
 
-        // Firebase Authentication ile yeni kullanıcı oluşturma
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser user = mAuth.getCurrentUser();
+        // Yüklenme göstergesini göster
+        progressDialog.show();
 
-                        // Kullanıcı bilgilerini Realtime Database'e kaydet
-                        if (user != null) {
-                            String userId = user.getUid(); // Kullanıcının ID'sini al
-                            User newUser = new User(username, email); // Kullanıcı bilgilerini içeren bir User nesnesi oluştur
-                            databaseReference.child(userId).setValue(newUser) // Kullanıcı bilgilerini veritabanına ekle
-                                    .addOnCompleteListener(databaseTask -> {
-                                        if (databaseTask.isSuccessful()) {
-                                            Toast.makeText(RegisterActivity.this, "Kayıt Başarılı", Toast.LENGTH_SHORT).show();
-                                            // LoginActivity'ye geçiş yap
-                                            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        } else {
-                                            Log.w("RegisterActivity", "Database error: " + databaseTask.getException());
-                                            Toast.makeText(RegisterActivity.this, "Kullanıcı bilgileri kaydedilemedi.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-                        }
+        // Mevcut kullanıcıları kontrol et
+        databaseReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Aynı e-posta zaten mevcut
+                    progressDialog.dismiss();
+                    emailEditText.setError("Farklı bir e-posta giriniz");
+                    Log.e("RegisterActivity", "E-posta zaten mevcut: " + email);
+                } else {
+                    // Kullanıcı bilgilerini Realtime Database'e kaydet
+                    String userId = databaseReference.push().getKey(); // Yeni bir kullanıcı ID'si oluştur
+                    User newUser = new User(username, email, password); // Kullanıcı bilgilerini içeren bir User nesnesi oluştur
+                    if (userId != null) {
+                        databaseReference.child(userId).setValue(newUser) // Kullanıcı bilgilerini veritabanına ekle
+                                .addOnCompleteListener(databaseTask -> {
+                                    // Yüklenme göstergesini gizle
+                                    progressDialog.dismiss();
+                                    if (databaseTask.isSuccessful()) {
+                                        Toast.makeText(RegisterActivity.this, "Kayıt Başarılı", Toast.LENGTH_SHORT).show();
+                                        // LoginActivity'ye geçiş yap
+                                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Log.e("RegisterActivity", "Database error: " + databaseTask.getException());
+                                        Snackbar.make(view, "Kullanıcı bilgileri kaydedilemedi.", Snackbar.LENGTH_LONG).show();
+                                    }
+                                });
                     } else {
-                        Log.w("RegisterActivity", "createUserWithEmail:failure", task.getException());
-                        if (task.getException() != null) {
-                            String errorMessage = task.getException().getMessage();
-                            if (errorMessage != null) {
-                                Toast.makeText(RegisterActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "Kayıt başarısız oldu.", Toast.LENGTH_SHORT).show();
-                        }
+                        progressDialog.dismiss();
+                        Log.e("RegisterActivity", "Kullanıcı ID'si oluşturulamadı.");
+                        Snackbar.make(view, "Kullanıcı kaydı sırasında hata oluştu.", Snackbar.LENGTH_LONG).show();
                     }
-                });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                progressDialog.dismiss();
+                Log.e("RegisterActivity", "Database error: " + databaseError.getMessage());
+                Snackbar.make(view, "Veritabanı hatası: " + databaseError.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 
     // User sınıfı
     public static class User {
         public String username;
         public String email;
+        public String password; // Şifre alanı eklendi
 
         public User() {
             // Boş constructor gerekli
         }
 
-        public User(String username, String email) {
+        public User(String username, String email, String password) {
             this.username = username;
             this.email = email;
+            this.password = password; // Şifre alanı eklendi
         }
     }
 }

@@ -9,33 +9,25 @@ import android.widget.Toast;
 import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText emailEditText, passwordEditText;
     private Button loginButton;
-    private FirebaseAuth mAuth;
-
-    public void onRegisterButtonClick(View view) {
-        // RegisterActivity'ye geçiş yap
-        Intent intent = new Intent(this, RegisterActivity.class);
-        startActivity(intent);
-    }
-
-    public void onForgotPasswordClick(View view) {
-        Intent intent = new Intent(this, ResetPasswordActivity.class);
-        startActivity(intent);
-    }
+    private DatabaseReference databaseReference; // Realtime Database referansı
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Firebase Authentication örneğini al
-        mAuth = FirebaseAuth.getInstance();
+        // Database referansını al
+        databaseReference = FirebaseDatabase.getInstance().getReference("Users");
 
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
@@ -43,6 +35,17 @@ public class LoginActivity extends AppCompatActivity {
 
         // Giriş butonuna tıklanma olayını tanımla
         loginButton.setOnClickListener(v -> loginUser());
+
+
+    }
+    public void onRegisterButtonClick(View view) {
+        // RegisterActivity'ye geçiş yap
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+    }
+    public void onForgotPasswordClick(View view) {
+        Intent intent = new Intent(this, ResetPasswordActivity.class);
+        startActivity(intent);
     }
 
     private void loginUser() {
@@ -60,24 +63,35 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Firebase ile kullanıcı girişi yap
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        // Giriş başarılı
-                        FirebaseUser user = mAuth.getCurrentUser();
-                        Toast.makeText(LoginActivity.this, "Giriş Başarılı", Toast.LENGTH_SHORT).show();
-                        // HomeActivity'ye yönlendir
-                        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                        finish(); // LoginActivity'yi kapat
-                    } else {
-                        // Giriş başarısız
-                        Exception exception = task.getException();
-                        String errorMessage = exception != null ? exception.getMessage() : "Giriş başarısız oldu.";
-                        Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+        // Kullanıcı bilgilerini Realtime Database'den kontrol et
+        databaseReference.orderByChild("email").equalTo(email).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Kullanıcı bulundu
+                    for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                        User user = userSnapshot.getValue(User.class);
+                        if (user != null && user.password.equals(password)) {
+                            // Giriş başarılı
+                            Toast.makeText(LoginActivity.this, "Giriş Başarılı", Toast.LENGTH_SHORT).show();
+                            // HomeActivity'ye yönlendir
+                            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                            finish(); // LoginActivity'yi kapat
+                            return;
+                        }
                     }
-                });
+                    // Şifre yanlış
+                    Toast.makeText(LoginActivity.this, "Şifre yanlış", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Kullanıcı bulunamadı
+                    Toast.makeText(LoginActivity.this, "Kullanıcı bulunamadı", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(LoginActivity.this, "Veritabanı hatası: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
-
-
 }

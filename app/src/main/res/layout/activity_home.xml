@@ -12,4 +12,13 @@
         android:textSize="24sp"
         android:textColor="@android:color/black"
         android:layout_centerInParent="true" />
+
+    <Button
+        android:id="@+id/backToLoginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Geri Dön"
+        android:layout_below="@id/welcomeTextView"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
