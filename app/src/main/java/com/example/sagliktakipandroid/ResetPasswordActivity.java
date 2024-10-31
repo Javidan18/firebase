@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 public class ResetPasswordActivity extends AppCompatActivity {
-    private EditText emailEditText, codeEditText, newPasswordEditText;
+    private EditText newPasswordEditText, repeatPasswordEditText;
     private ProgressDialog progressDialog;
 
     @Override
@@ -21,10 +21,11 @@ public class ResetPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reset_password);
 
         // EditText ve Button bileşenlerini bul
-        emailEditText = findViewById(R.id.emailEditText);
-        codeEditText = findViewById(R.id.codeEditText);
         newPasswordEditText = findViewById(R.id.newPasswordEditText);
+        repeatPasswordEditText = findViewById(R.id.repeatPasswordEditText);
+
         Button submitButton = findViewById(R.id.submitButton);
+        Button backButton = findViewById(R.id.backButton); // Geri Dön butonu
 
         // Yüklenme göstergesi ayarları
         progressDialog = new ProgressDialog(this);
@@ -32,43 +33,36 @@ public class ResetPasswordActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
 
         // Submit butonuna tıklama olayını tanımlayın
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetPassword(v); // Şifre sıfırlama işlemini başlat
-            }
-        });
+        submitButton.setOnClickListener(v -> resetPassword(v)); // Şifre sıfırlama işlemini başlat
+
+        // Geri Dön butonuna tıklama olayını tanımlayın
+        backButton.setOnClickListener(v -> onBackButtonClick()); // Geri dönme işlemini başlat
     }
 
     // Şifre sıfırlama işlemi
     private void resetPassword(View view) {
-        String email = emailEditText.getText().toString().trim();
-        String code = codeEditText.getText().toString().trim();
         String newPassword = newPasswordEditText.getText().toString().trim();
+        String repeatPassword = repeatPasswordEditText.getText().toString().trim();
 
         // Giriş doğrulamaları
-        if (TextUtils.isEmpty(email)) {
-            showError(emailEditText, "Lütfen e-posta adresinizi girin.");
-            return;
-        }
-        if (!email.endsWith("@gmail.com")) {
-            Snackbar.make(view, "Lütfen geçerli bir Gmail adresi girin.", Snackbar.LENGTH_SHORT).show();
-            return;
-        }
-        if (TextUtils.isEmpty(code)) {
-            showError(codeEditText, "Lütfen e-posta kodunu girin.");
-            return;
-        }
         if (TextUtils.isEmpty(newPassword)) {
             showError(newPasswordEditText, "Lütfen yeni şifrenizi girin.");
+            return;
+        }
+        if (TextUtils.isEmpty(repeatPassword)) {
+            showError(repeatPasswordEditText, "Lütfen şifreyi tekrar girin.");
+            return;
+        }
+        if (!newPassword.equals(repeatPassword)) {
+            Snackbar.make(view, "Şifreler eşleşmiyor.", Snackbar.LENGTH_SHORT).show();
             return;
         }
 
         // Yüklenme göstergesini göster
         progressDialog.show();
 
-        // Gerekli işlemleri burada yapın (örneğin, kod doğrulama, şifre güncelleme)
-        simulatePasswordReset(email, code, newPassword, view);
+        // Gerekli işlemleri burada yapın (örneğin, şifre güncelleme)
+        simulatePasswordReset(newPassword, view);
     }
 
     // Hata mesajlarını gösteren yardımcı yöntem
@@ -78,23 +72,22 @@ public class ResetPasswordActivity extends AppCompatActivity {
     }
 
     // Şifre sıfırlama simülasyonu
-    private void simulatePasswordReset(String email, String code, String newPassword, View view) {
+    private void simulatePasswordReset(String newPassword, View view) {
         new android.os.Handler().postDelayed(() -> {
             // Yüklenme göstergesini gizle
             progressDialog.dismiss();
 
             // İşlem başarılıysa
             Toast.makeText(ResetPasswordActivity.this, "Şifre güncellendi", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(ResetPasswordActivity.this, LoginActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
             finish(); // ResetPasswordActivity'yi kapat
 
         }, 2000); // 2 saniye sonra işlem tamamlandı
     }
 
-    public void onBackButtonClick(View view) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+    // Geri Dön butonuna tıklandığında çağrılan yöntem
+    public void onBackButtonClick() {
+        startActivity(new Intent(this, LoginActivity.class));
         finish(); // ResetPasswordActivity'yi kapat
     }
 }

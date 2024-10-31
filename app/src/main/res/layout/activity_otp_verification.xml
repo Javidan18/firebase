@@ -1,0 +1,128 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@drawable/background_gradient">
+
+    <!-- Header - OTP Code -->
+    <TextView
+        android:id="@+id/otpHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OTP Code"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="150dp" />
+
+    <!-- 3D Security Logo -->
+    <ImageView
+        android:id="@+id/securityLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_security"
+        android:layout_below="@id/otpHeader"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp" />
+
+    <!-- OTP Kod Blokları -->
+    <LinearLayout
+        android:id="@+id/otpCodeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal">
+
+        <!-- 4 Blok -->
+        <EditText
+            android:id="@+id/otpEditText1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="1"
+            android:background="@drawable/edit_text_background"
+            android:textSize="24sp"
+            android:hint="1" />
+
+        <EditText
+            android:id="@+id/otpEditText2"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="8dp"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="1"
+            android:background="@drawable/edit_text_background"
+            android:textSize="24sp"
+            android:hint="2" />
+
+        <EditText
+            android:id="@+id/otpEditText3"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="8dp"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="1"
+            android:background="@drawable/edit_text_background"
+            android:textSize="24sp"
+            android:hint="3" />
+
+        <EditText
+            android:id="@+id/otpEditText4"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="8dp"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="1"
+            android:background="@drawable/edit_text_background"
+            android:textSize="24sp"
+            android:hint="4" />
+    </LinearLayout>
+
+    <!-- Kodu Yeniden Gönder -->
+    <!-- Kodu Yeniden Gönder -->
+    <TextView
+        android:id="@+id/resendCodeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/otpCodeLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="Kodu yeniden gönder?"
+        android:textColor="@android:color/holo_blue_dark"
+        android:visibility="gone"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true" />
+
+
+    <!-- Timer -->
+    <TextView
+        android:id="@+id/timerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/resendCodeTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"
+        android:text="30"
+        android:textColor="@android:color/holo_red_dark" />
+
+    <!-- Kayıt Ol Butonu -->
+    <Button
+        android:id="@+id/verifyOtpButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/timerTextView"
+        android:layout_centerHorizontal="true"
+        android:text="Kayıt Ol"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:padding="12dp"
+        android:background="@drawable/button_background"
+        android:textColor="@android:color/white"
+        android:onClick="onVerifyOtpClick" />
+</RelativeLayout>

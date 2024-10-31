@@ -35,14 +35,14 @@ public class LoginActivity extends AppCompatActivity {
 
         // Giriş butonuna tıklanma olayını tanımla
         loginButton.setOnClickListener(v -> loginUser());
-
-
     }
+
     public void onRegisterButtonClick(View view) {
         // RegisterActivity'ye geçiş yap
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
     }
+
     public void onForgotPasswordClick(View view) {
         Intent intent = new Intent(this, ResetPasswordActivity.class);
         startActivity(intent);
@@ -83,8 +83,8 @@ public class LoginActivity extends AppCompatActivity {
                     // Şifre yanlış
                     Toast.makeText(LoginActivity.this, "Şifre yanlış", Toast.LENGTH_SHORT).show();
                 } else {
-                    // Kullanıcı bulunamadı
-                    Toast.makeText(LoginActivity.this, "Kullanıcı bulunamadı", Toast.LENGTH_SHORT).show();
+                    // Kullanıcı bulunamadı (kayıtlı e-posta yok)
+                    Toast.makeText(LoginActivity.this, "Bu e-posta ile kayıtlı bir kullanıcı bulunamadı", Toast.LENGTH_SHORT).show();
                 }
             }
 
