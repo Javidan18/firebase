@@ -4,4 +4,11 @@
     <corners android:radius="12dp" />
     <padding android:left="12dp" android:top="12dp" android:right="12dp" android:bottom="12dp" />
     <shadowColor android:color="#000000" />
+    <solid android:color="#7AB1E2" />
+    <corners android:radius="0dp"/>
+    <padding
+        android:left="10dp"
+        android:top="10dp"
+        android:right="10dp"
+        android:bottom="10dp" />
 </shape>

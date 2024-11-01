@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#A0D8E6" /> <!-- Beyaz renk -->
+    <size
+        android:width="35dp"
+        android:height="35dp" />
+    <corners android:radius="24dp" /> <!-- Yuvarlak köşeler -->
+</shape>

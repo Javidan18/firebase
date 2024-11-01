@@ -9,6 +9,9 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.sagliktakipandroid.domain.SendMailUseCase;
+
+
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText usernameEditText, emailEditText, passwordEditText, repeatPasswordEditText;
@@ -42,15 +45,22 @@ public class RegisterActivity extends AppCompatActivity {
         String password = passwordEditText.getText().toString().trim();
         String repeatPassword = repeatPasswordEditText.getText().toString().trim();
 
-
+        // Kullanıcı girişi doğrulama (örneğin, boş alan kontrolü)
         if (isValidInput(username, email, password, repeatPassword)) {
-
-            Intent intent = new Intent(RegisterActivity.this, OtpVerificationActivity.class);
-            startActivity(intent);
-            finish(); // Bu activity'yi kapat
+            // OTP kodunu oluştur ve gönder
+            SendMailUseCase sendMailUseCase = new SendMailUseCase();
+            sendMailUseCase.invoke(email, otpCode -> {
+                // OTP kodunu aldığınızda, OtpVerificationActivity'ye geçiş yapın
+                Intent intent = new Intent(RegisterActivity.this, OtpVerificationActivity.class);
+                intent.putExtra("username", username);
+                intent.putExtra("email", email);
+                intent.putExtra("password", password);
+                intent.putExtra("otpCode",otpCode);  // OTP kodunu intent ile aktar
+                startActivity(intent);
+                finish();
+            });
         }
     }
-
     private boolean isValidInput(String username, String email, String password, String repeatPassword) {
         if (TextUtils.isEmpty(username)) {
             usernameEditText.setError("Kullanıcı adı gerekli");
@@ -80,4 +90,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         return true;
     }
+
+
 }

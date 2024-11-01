@@ -7,4 +7,6 @@
     <color name="colorText">#000000</color> <!-- Metin rengi -->
     <color name="colorPrimary1">#FF5722</color> <!-- Geri dön butonu rengi -->
     <color name="colorAccent1">#4CAF50</color>
+    <color name="buttonTextColor">#FFFFFF</color> <!-- Buton metni rengi -->
+
 </resources>
