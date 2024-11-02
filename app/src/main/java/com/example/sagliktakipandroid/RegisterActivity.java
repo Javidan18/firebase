@@ -9,6 +9,8 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.sagliktakipandroid.domain.SendMailUseCase;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText usernameEditText, emailEditText, passwordEditText, repeatPasswordEditText;
@@ -45,7 +47,13 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (isValidInput(username, email, password, repeatPassword)) {
 
+            String otpCode = new SendMailUseCase().invoke(email);
+
             Intent intent = new Intent(RegisterActivity.this, OtpVerificationActivity.class);
+            intent.putExtra("username", username);
+            intent.putExtra("email", email);
+            intent.putExtra("password", password);
+            intent.putExtra("otpCode", otpCode);
             startActivity(intent);
             finish(); // Bu activity'yi kapat
         }

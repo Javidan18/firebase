@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.sagliktakipandroid">
 
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -35,6 +38,5 @@
             android:exported="false" />  <!-- Dışa kapalı yapabilirsiniz -->
     </application>
 
-    <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Gerekirse diğer izinleri ekleyin -->
 </manifest>
