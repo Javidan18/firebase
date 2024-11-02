@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DatabaseReference;
@@ -20,12 +19,12 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
     private EditText otpEditText1, otpEditText2, otpEditText3, otpEditText4;
     private Button verifyOtpButton;
-    private TextView resendCodeTextView; // Button olarak güncellendi
+    private TextView resendCodeTextView;
     private TextView timerTextView;
     private DatabaseReference userRef;
 
     private String username, email, password;
-    private String sentOtpCode; // Gönderilen OTP kodu
+    private String sentOtpCode;
 
     private CountDownTimer countDownTimer;
 
@@ -36,12 +35,21 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
         userRef = FirebaseDatabase.getInstance().getReference("Users");
 
+        // Intent verilerini al
         Intent intent = getIntent();
         username = intent.getStringExtra("username");
         email = intent.getStringExtra("email");
         password = intent.getStringExtra("password");
-        sentOtpCode = intent.getStringExtra("otpCode"); // OTP kodunu al
+        sentOtpCode = intent.getStringExtra("otpCode");
 
+        // Null kontrolü
+        if (sentOtpCode == null) {
+            Toast.makeText(this, "OTP kodu alınamadı. Lütfen tekrar deneyin.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // UI elemanlarını tanımla
         otpEditText1 = findViewById(R.id.otpEditText1);
         otpEditText2 = findViewById(R.id.otpEditText2);
         otpEditText3 = findViewById(R.id.otpEditText3);
@@ -50,12 +58,12 @@ public class OtpVerificationActivity extends AppCompatActivity {
         resendCodeTextView = findViewById(R.id.resendCodeTextView);
         timerTextView = findViewById(R.id.timerTextView);
 
-        resendCodeTextView.setVisibility(View.GONE); // Başlangıçta gizle
-        resendCodeTextView.setEnabled(false); // Butonu devre dışı bırak
+        resendCodeTextView.setVisibility(View.GONE);
+        resendCodeTextView.setEnabled(false);
 
-        // Geri sayımı başlat
         startCountDownTimer();
 
+        // OTP doğrulama işlemi
         verifyOtpButton.setOnClickListener(v -> {
             String otpCode = otpEditText1.getText().toString() + otpEditText2.getText().toString() +
                     otpEditText3.getText().toString() + otpEditText4.getText().toString();
@@ -66,7 +74,6 @@ public class OtpVerificationActivity extends AppCompatActivity {
             }
 
             if (otpCode.equals(sentOtpCode)) {
-                // OTP kodu doğruysa kullanıcı bilgilerini kaydet
                 saveUserToDatabase();
                 startActivity(new Intent(OtpVerificationActivity.this, LoginActivity.class));
                 finish();
@@ -75,20 +82,16 @@ public class OtpVerificationActivity extends AppCompatActivity {
             }
         });
 
-        // Kodu yeniden gönderme butonuna tıklandığında
-        resendCodeTextView.setOnClickListener(v -> {
-            // Yeni bir OTP kodu gönderme işlemleri buraya eklenecek
-
-            // Geri sayımı sıfırla ve başlat
-            resetCountDownTimer();
-        });
+        // Kod yeniden gönderme işlemi
+        resendCodeTextView.setOnClickListener(v -> resetCountDownTimer());
     }
 
+    // Geri sayımı başlatır
     private void startCountDownTimer() {
-        timerTextView.setVisibility(View.VISIBLE); // Timer'ı göster
-        timerTextView.setText("10");  // Timer'ı sıfırla
+        timerTextView.setVisibility(View.VISIBLE);
+        timerTextView.setText("10");
 
-        countDownTimer = new CountDownTimer(10000, 1000) { // 10 saniye
+        countDownTimer = new CountDownTimer(10000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 timerTextView.setText(String.valueOf(millisUntilFinished / 1000));
@@ -96,25 +99,25 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                resendCodeTextView.setVisibility(View.VISIBLE);  // Kodu yeniden gönder butonunu göster
-                resendCodeTextView.setEnabled(true); // Butonu aktif hale getir
-                timerTextView.setVisibility(View.GONE); // Timer'ı gizle
-                Toast.makeText(OtpVerificationActivity.this, "Kod gönderilebilir!", Toast.LENGTH_SHORT).show();
+                resendCodeTextView.setVisibility(View.VISIBLE);
+                resendCodeTextView.setEnabled(true);
+                timerTextView.setVisibility(View.GONE);
+                Toast.makeText(OtpVerificationActivity.this, "Kod yeniden gönderilebilir.", Toast.LENGTH_SHORT).show();
             }
         }.start();
     }
 
+    // Geri sayımı sıfırlayıp yeniden başlatır
     private void resetCountDownTimer() {
-        // Geri sayımı durdur
         if (countDownTimer != null) {
             countDownTimer.cancel();
         }
-        // Geri sayımı yeniden başlat
-        resendCodeTextView.setVisibility(View.GONE); // Butonu gizle
-        resendCodeTextView.setEnabled(false); // Butonu devre dışı bırak
+        resendCodeTextView.setVisibility(View.GONE);
+        resendCodeTextView.setEnabled(false);
         startCountDownTimer();
     }
 
+    // Kullanıcı bilgilerini veritabanına kaydeder
     private void saveUserToDatabase() {
         HashMap<String, Object> userMap = new HashMap<>();
         userMap.put("username", username);
