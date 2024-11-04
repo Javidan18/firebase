@@ -29,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
         // Database referansını al
         databaseReference = FirebaseDatabase.getInstance().getReference("Users");
 
+        // Görünüm öğelerini tanımla
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
         loginButton = findViewById(R.id.loginButton);
@@ -44,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onForgotPasswordClick(View view) {
+        // ResetPasswordActivity'ye geçiş yap
         Intent intent = new Intent(this, ResetPasswordActivity.class);
         startActivity(intent);
     }
@@ -57,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
             emailEditText.setError("Email gerekli");
             return;
         }
-
         if (TextUtils.isEmpty(password)) {
             passwordEditText.setError("Şifre gerekli");
             return;
@@ -74,9 +75,12 @@ public class LoginActivity extends AppCompatActivity {
                         if (user != null && user.password.equals(password)) {
                             // Giriş başarılı
                             Toast.makeText(LoginActivity.this, "Giriş Başarılı", Toast.LENGTH_SHORT).show();
-                            // HomeActivity'ye yönlendir
-                            startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                            finish(); // LoginActivity'yi kapat
+
+                            // Kullanıcı ID'sini al ve HomeActivity'ye geçir
+                            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                            intent.putExtra("USER_ID", userSnapshot.getKey());
+                            startActivity(intent);
+                            finish();
                             return;
                         }
                     }

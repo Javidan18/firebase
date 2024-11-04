@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name" translatable="false">sagliktakipandroid</string>
+    <string name="back_button">Geri Dön</string>
+    <string name="settings_button">Ayarlar</string>
+    <string name="logout">Çıkış Yap</string>
+    <string name="profile_photo">Profil Fotoğrafı</string>
 </resources>

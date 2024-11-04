@@ -36,6 +36,16 @@
         <activity
             android:name=".HomeActivity"
             android:exported="false" />  <!-- Dışa kapalı yapabilirsiniz -->
+
+        <activity
+            android:name=".SettingsHomeActivity"
+            android:exported="false" />  <!-- SettingsActivity'yi ekledik -->
+
+
+        <activity
+            android:name=".SettingsHomeProfilActivity"
+            android:exported="false" />  <!-- SettingsActivity'yi ekledik -->
+
     </application>
 
     <!-- Gerekirse diğer izinleri ekleyin -->
